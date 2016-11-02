@@ -1,5 +1,6 @@
 ﻿#Import Drivers in SCVMM Lib
-Function Import-FASCVMDriver{
+Function Import-VIASCVMDriver
+{
     param(
         $SCVMMLibPath,
         $LocalDriversPath
@@ -7,7 +8,8 @@ Function Import-FASCVMDriver{
     Copy-item -Path "$LocalDriversPath" -Destination "$SCVMMLibPath" -Recurse
     Get-SCLibraryShare | Read-SCLibraryShare
 }
-Function Set-FASCVMDriverTag{
+Function Set-VIASCVMDriverTag
+{
     Param(
         $TagName,
         $SourceFolder
@@ -21,7 +23,8 @@ Function Set-FASCVMDriverTag{
         Set-SCDriverPackage -DriverPackage $DriverPackage -Tag $TagName -RunAsynchronously
     }
 }
-Function Install-HPSUM($HostName){
+Function Install-VIAHPSUM($HostName)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $True
@@ -32,19 +35,22 @@ Function Install-HPSUM($HostName){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Start-FAMaintMode($HostName){
+Function Start-VIAMaintMode($HostName)
+{
     #Set in MainMode
     $VMHost = Get-SCVMHost -ComputerName $HostName
     Disable-SCVMHost -VMHost $VMHost -Verbose
     Start-Sleep 2
 }
-Function Stop-FAMaintMode($HostName){
+Function Stop-VIAMaintMode($HostName)
+{
     #Set in MainMode
     $VMHost = Get-SCVMHost -ComputerName $HostName
     Enable-SCVMHost -VMHost $VMHost -Verbose
     Start-Sleep 2
 }
-Function Set-FADisconnectedNicsDisable($HostName){
+Function Set-VIADisconnectedNicsDisable($HostName)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $false
@@ -55,12 +61,14 @@ Function Set-FADisconnectedNicsDisable($HostName){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-function Get-FASCVMHostRefresh($HostName){
+function Get-VIASCVMHostRefresh($HostName)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     Read-SCVMHost -VMHost $VMHost
     Read-SCVirtualMachine -VMHost $VMHost
     }
-function Add-FAAdmintools($HostName){
+function Add-VIAAdmintools($HostName)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $false
@@ -71,7 +79,8 @@ function Add-FAAdmintools($HostName){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Install-FAProWin64($HostName){
+Function Install-VIAProWin64($HostName)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $false
@@ -82,7 +91,8 @@ Function Install-FAProWin64($HostName){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Set-FAIntelNicForHyperVOnly($HostName){
+Function Set-VIAIntelNicForHyperVOnly($HostName)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $false
@@ -93,7 +103,8 @@ Function Set-FAIntelNicForHyperVOnly($HostName){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Install-FADellOMSU($HostName){
+Function Install-VIADellOMSU($HostName)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $false
@@ -104,7 +115,8 @@ Function Install-FADellOMSU($HostName){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Install-FADellDriverPackForR730($HostName){
+Function Install-VIADellDriverPackForR730($HostName)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $false
@@ -115,7 +127,8 @@ Function Install-FADellDriverPackForR730($HostName){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Install-FADellChipSetDriverForR730($HostName){
+Function Install-VIADellChipSetDriverForR730($HostName)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $false
@@ -126,7 +139,8 @@ Function Install-FADellChipSetDriverForR730($HostName){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Install-FADellPERC($HostName){
+Function Install-VIADellPERC($HostName)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $true
@@ -137,28 +151,16 @@ Function Install-FADellPERC($HostName){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Install-FADellPERCFW($HostName){
-    $VMHost = Get-SCVMHost -ComputerName $HostName
-    $scriptSetting = New-SCScriptCommandSetting
-    Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $true
-    $CommandParams = "/c \\fadepl01\ApplicationRoot\Install-PERC\Source\SAS-RAID_Firmware_WN0HC_WN64_25.3.0.0016_A04.EXE /s" 
-    $Command = "CMD.exe"
-    Invoke-SCScriptCommand -Executable $Command -TimeoutSeconds 900 -CommandParameters $CommandParams -VMHost $VMHost -ScriptCommandSetting $scriptSetting
-    $ScriptJob = Get-SCJob -newest 3 | where { $_.Status -eq "Running" -and $_.Name -Like "Invoke script command ($Command $CommandParams)" }
-    do {}
-    While($scriptjob.status -eq 'Running')
-}
-Function Set-FALiveMig($HostName,$LiveMigrationSubnets){
+Function Set-VIALiveMig($HostName,$LiveMigrationSubnets)
+{
     $VMHost = Get-SCVMHost -ComputerName $HostName
     Set-SCVMHost -VMHost $vmHost -LiveStorageMigrationMaximum "4" -EnableLiveMigration $true -LiveMigrationMaximum "4" -MigrationPerformanceOption "UseCompression" -MigrationAuthProtocol "CredSSP" -UseAnyMigrationSubnet $false -MigrationSubnet $LiveMigrationSubnets
 }
-Function Show-FASText($Text,$Color){
-    Write-Host $Text -ForegroundColor $Color
-}
-Function Restart-FAComputer($Hostname){
-    Restart-Computer -ComputerName $Hostname -Force -AsJob
-}
-Function Enable-RDPAccess($hostname){
+Function Enable-VIARDPAccess
+{
+        Param(
+        $SCVMMHostName
+    )    
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $false
@@ -169,7 +171,11 @@ Function Enable-RDPAccess($hostname){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Disable-RDPSecurity($hostname){
+Function Disable-VIARDPSecurity
+{
+        Param(
+        $SCVMMHostName
+    )
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $false
@@ -180,7 +186,12 @@ Function Disable-RDPSecurity($hostname){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Enable-RDPFirewallRules($hostname){
+Function Enable-VIARDPFirewallRules
+{
+    Param(
+        $SCVMMHostName
+    )
+
     $VMHost = Get-SCVMHost -ComputerName $HostName
     $scriptSetting = New-SCScriptCommandSetting
     Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $false
@@ -191,17 +202,22 @@ Function Enable-RDPFirewallRules($hostname){
     do {}
     While($scriptjob.status -eq 'Running')
 }
-Function Install-SNMP($hostname){
-    Add-WindowsFeature -Name SNMP-Service -IncludeAllSubFeature -IncludeManagementTools -ComputerName $hostname
-    }
-Function Install-DCB
+Function Install-VIASCVMMHostApplication
 {
     Param(
-        $Hostname
+        $SCVMMHostName,
+        $Command,
+        $Arguments,
+        $Reboot
     )
-    Foreach($Item in $Hostname){
-        Invoke-Command -ComputerName $Item -ScriptBlock {
-            Add-WindowsFeature -Name Data-Center-Bridging -IncludeAllSubFeature -IncludeManagementTools
-        }
-    }
+
+    $VMHost = Get-SCVMHost -ComputerName $SCVMMHostName
+    $ScriptSetting = New-SCScriptCommandSetting
+    Set-SCScriptCommandSetting -ScriptCommandSetting $scriptSetting -WorkingDirectory "" -PersistStandardOutputPath "" -PersistStandardErrorPath "" -MatchStandardOutput "" -MatchStandardError "" -MatchExitCode "" -WarnAndContinueOnMatch -RestartOnRetry $false -MatchRebootExitCode "{1}|{3010}|{3011}" -RestartScriptOnExitCodeReboot $false -AlwaysReboot $true
+    $Arguments = "/c \\fadepl01\ApplicationRoot\Install-PERC\Source\SAS-RAID_Firmware_WN0HC_WN64_25.3.0.0016_A04.EXE /s" 
+
+    Invoke-SCScriptCommand -Executable $Command -TimeoutSeconds 900 -CommandParameters $Arguments -VMHost $VMHost -ScriptCommandSetting $scriptSetting
+    $ScriptJob = Get-SCJob -newest 3 | where { $_.Status -eq "Running" -and $_.Name -Like "Invoke script command ($Command $CommandParams)" }
+    do {}
+    While($scriptjob.status -eq 'Running')
 }

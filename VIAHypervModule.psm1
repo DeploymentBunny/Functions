@@ -1,5 +1,4 @@
-﻿
-Function Get-VIAKVPData
+﻿Function Get-VIAKVPData
 {
 <#
 .Synopsis
@@ -834,4 +833,19 @@ Function New-VIAVMHarddrive
             Write-warning "Woops, disk is already created"
         }
     }
+}
+Function Test-VIAVMSwitchexistence
+{
+    Param(
+        [string]$VMSwitchname
+    )
+        $Item = (Get-VMSwitch | Where-Object -Property Name -EQ -Value $VMSwitchname).count
+        If($Item -eq '1'){Return $true}else{Return $false}
+}
+Function Compress-VIAVHD
+{
+    Param($VHDFile)
+    Mount-VHD -Path $VHDFile -NoDriveLetter -ReadOnly
+    Optimize-VHD -Path $VHDFile -Mode Full
+    Dismount-VHD -Path $VHDFile
 }

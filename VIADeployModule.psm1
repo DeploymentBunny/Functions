@@ -1,4 +1,5 @@
-﻿Function New-VIAUnattendXML{
+﻿Function New-VIAUnattendXML
+{
     <#
      ##################################################################################
      #  Script name: Create-UnattendXML.ps1
@@ -228,7 +229,8 @@
     Add-Content $unattendFile '</unattend>'
     Return $unattendFile
 }
-Function New-VIASetupCompletecmd{
+Function New-VIASetupCompletecmd
+{
 <#
 .Synopsis
    Short description
@@ -255,7 +257,8 @@ Function New-VIASetupCompletecmd{
     Add-Content $unattendFile "$Command"
     Return $unattendFile
 }
-Function New-VIAISOImage{
+Function New-VIAISOImage
+{
     Param(
     $SourceFolder,
     $Destinationfile

@@ -1,31 +1,53 @@
-﻿Function Invoke-VIAExe
+﻿<#
+.Synopsis
+   FANicUtility.psm1
+.DESCRIPTION
+   FANicUtility.psm1
+.EXAMPLE
+   Example of how to use this cmdlet
+#>
+
+function Rename-VIANetAdapter
 {
-    [CmdletBinding(SupportsShouldProcess=$true)]
+<#
+.Synopsis
+   Rename-FANetAdapter
+.DESCRIPTION
+   Rename-FANetAdapter is a part of HYDV6
+.EXAMPLE
+   Example of how to use this cmdlet
+#>
+    Param(
+        [Parameter(Mandatory=$true,
+            ValueFromPipelineByPropertyName=$true,
+            Position=0)]
+        $NetAdapterMacAddress,
 
-    param(
-        [parameter(mandatory=$true,position=0)]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $Executable,
-
-        [parameter(mandatory=$true,position=1)]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $Arguments,
-
-        [parameter(mandatory=$false,position=2)]
-        [ValidateNotNullOrEmpty()]
-        [int]
-        $SuccessfulReturnCode = 0
+        [Parameter(Mandatory=$true,
+            ValueFromPipelineByPropertyName=$true,
+            Position=1)]
+        $NetAdapterNewName
     )
-
-    Write-Verbose "Running $ReturnFromEXE = Start-Process -FilePath $Executable -ArgumentList $Arguments -NoNewWindow -Wait -Passthru"
-    $ReturnFromEXE = Start-Process -FilePath $Executable -ArgumentList $Arguments -NoNewWindow -Wait -Passthru
-
-    Write-Verbose "Returncode is $($ReturnFromEXE.ExitCode)"
-
-    if(!($ReturnFromEXE.ExitCode -eq $SuccessfulReturnCode)) {
-        throw "$Executable failed with code $($ReturnFromEXE.ExitCode)"
+    Foreach($Item in $NetAdapterMacAddress){
+        Write-Verbose "Looking for $Item"
+        $NIC = Get-NetAdapter -Physical | Where-Object -Property MacAddress -EQ -Value $($Item.Replace(":","-"))
+        Rename-NetAdapter -InputObject $NIC -NewName $NetAdapterNewName
+    }
+}
+function Disable-VIADisconnectedNetAdapter
+{
+<#
+.Synopsis
+   Disable-VIADisconnectedNetAdapter
+.DESCRIPTION
+   Disable-VIADisconnectedNetAdapter is a part of HYDV6
+.EXAMPLE
+   Disable-VIADisconnectedNetAdapter
+#>
+    $Nics = Get-NetAdapter -Physical | Where-Object -Property Status -EQ -Value Disconnected
+    Foreach($Item in $Nics){
+        Write-Verbose "Looking for $Item"
+        Disable-NetAdapter -InputObject $Item -Confirm:$false
     }
 }
 Function Convert-VIASubnet
@@ -199,28 +221,4 @@ Function Convert-VIASubnet
     Add-Member -InputObject $Return -Name SubnetMask -Value  $SubnetMaskReturn -Type NoteProperty
     $Return
 }
-Function Compress-VIADeDupDrive
-{
-    Param($DriveLetter)
-    Get-DedupStatus
-    $Drive = $DriveLetter + ":"
-    $Drive
-    Start-DedupJob $Drive -Type Optimization -Priority High -Memory 75 -Wait
-    Start-DedupJob $Drive -Type GarbageCollection -Priority High -Memory 75 -Wait
-    Start-DedupJob $Drive -Type Scrubbing -Priority High -Memory 75 -Wait
-    Get-DedupStatus
-}
-Function Enable-VIACredSSP
-{
-    [CmdletBinding()]
-    Param
-    (
-        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,Position=0)]
-        $Connection
-    )
 
-    #Enable CredSSP on Client
-    Enable-WSManCredSSP -Role Client -DelegateComputer $Connection -Force -ErrorAction Stop
-    Set-Item WSMan:\localhost\Client\AllowUnencrypted -Value $true -Force
-    Set-Item WSMan:\localhost\Client\TrustedHosts -Value * -Force -Concatenate
-}
