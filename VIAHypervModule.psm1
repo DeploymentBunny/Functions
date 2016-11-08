@@ -1,4 +1,16 @@
-﻿Function Get-VIAKVPData
+﻿<#
+.Synopsis
+   VIAHypervModule
+.DESCRIPTION
+   VIAHypervModule
+.EXAMPLE
+   Import-Module C:\Setup\Functions\VIAHypervModule.psm1
+.NOTES
+   http://www.deploymentbunny.com
+.COMPONENT
+   HYDv10
+#>
+Function Get-VIAKVPData
 {
 <#
 .Synopsis
@@ -844,8 +856,120 @@ Function Test-VIAVMSwitchexistence
 }
 Function Compress-VIAVHD
 {
-    Param($VHDFile)
+    Param(
+    [string]$VHDFile
+    )
     Mount-VHD -Path $VHDFile -NoDriveLetter -ReadOnly
     Optimize-VHD -Path $VHDFile -Mode Full
     Dismount-VHD -Path $VHDFile
 }
+Function Get-VIAUnimportedvmcxFiles
+{
+    <#
+    .Synopsis
+        Script used find not yet imported Hyper-V Configurations
+    .DESCRIPTION
+        Created: 2016-11-07
+        Version: 1.0
+        Author : Mikael Nystrom
+        Twitter: @mikael_nystrom
+        Blog   : http://deploymentbunny.com
+        Disclaimer: This script is provided "AS IS" with no warranties.
+    .EXAMPLE
+        Get-VIAUnimportedvmcxFiles
+    #>    
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    
+    Param(
+    [string]$Folder
+    )
+
+    $VMsIDs = (Get-VM).VMId
+    $VMConfigs = (Get-ChildItem -Path $VMBaseFolder -Filter *.vmcx -Recurse).BaseName
+
+    $obj = Compare-Object -ReferenceObject $VMsIDs -DifferenceObject $VMConfigs
+
+    $Configs = foreach($Item in ($obj.InputObject)){
+        #$Item
+        $Items = Get-ChildItem -Path $VMBaseFolder -Recurse -File -Filter *.vmcx  | Where-Object -Property Basename -Like -Value "*$Item" 
+        $Items | Where-Object -Property FullName -NotLike -Value "*Snapshots*"
+    }
+    Return $Configs.FullName
+}
+Function Get-VIADisconnectedVHDs
+{
+    <#
+    .Synopsis
+        Script used find .VHD files that are not connected to VM's
+    .DESCRIPTION
+        Created: 2016-11-07
+        Version: 1.0
+        Author : Mikael Nystrom
+        Twitter: @mikael_nystrom
+        Blog   : http://deploymentbunny.com
+        Disclaimer: This script is provided "AS IS" with no warranties.
+    .EXAMPLE
+        Get-Get-VIADisconnectedVHDs
+    #>    
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    
+    Param(
+    [string]$Folder
+    )
+
+    if((Test-Path -Path $Folder) -ne $true){
+        Write-Warning "I'm sorry, that folder does not exist"
+        Break
+    }
+
+    #Get the disk used by a VM
+    $VMs = (Get-VM | Where-Object -Property ParentSnapshotName -EQ -Value $null).VMId
+
+    if(($VMs.count) -eq '0'){
+        Write-Information "Sorry, could not find any VM's"
+        Break
+    }
+    $VHDsActive = foreach($VMsID in $VMs){
+        Get-VMHardDiskDrive -VM (Get-VM -Id $VMsID)
+    }
+
+    #Get the disk in the folder
+    $VHDsAll = Get-ChildItem -Path $Folder -Filter *.vhd* -Recurse
+    if(($VHDsAll.count) -eq '0'){
+        Write-Information "Sorry, could not find any VHD's in $folder"
+        Break
+    }
+
+    $obj = Compare-Object -ReferenceObject $VHDsActive.Path -DifferenceObject $VHDsAll.FullName
+
+    #Compare and give back the list of .vhd's that are not connected
+    Return ($obj | Where-Object -Property SideIndicator -EQ -Value =>).InputObject
+}
+Function Get-VIAActiveDiffDisk
+{
+    <#
+    .Synopsis
+        Script used to Deploy and Configure Fabric
+    .DESCRIPTION
+        Created: 2016-11-07
+        Version: 1.0
+        Author : Mikael Nystrom
+        Twitter: @mikael_nystrom
+        Blog   : http://deploymentbunny.com
+        Disclaimer: This script is provided "AS IS" with no warranties.
+    .EXAMPLE
+        Get-VIAActiveDiffDisk
+    #>    
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    param(
+    )
+
+    $VMHardDiskDrives = Get-VMHardDiskDrive -VM (Get-VM)
+    $ActiveDisks = foreach($VMHardDiskDrive in $VMHardDiskDrives){
+        $Diffs = Get-VHD -Path $VMHardDiskDrive.Path | Where-Object -Property VhdType -EQ -Value Differencing
+        $Diffs.ParentPath
+    }
+    $ActiveDisks | Sort-Object | Select-Object -Unique
+}
+
+
