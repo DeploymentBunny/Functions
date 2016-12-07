@@ -295,9 +295,101 @@ Function Restart-VIAComputer
         Restart-Computer -ComputerName $ComputerName -Force -AsJob
     }
 }
-Function Show-VIAText($Text,$Color)
+Function Show-VIAText
 {
+    Param(
+        $Text,
+        $Color
+    )
+    
     Write-Host $Text -ForegroundColor $Color
 }
+Function New-VIARandomPassword
+{
+    Param(
+        [int]$PasswordLength,
+        [boolean]$Complex
+    )
 
+    #Characters to use based
+    $strSimple = "A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z","1","2","3","4","5","6","7","8","9","0","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z” 
+    $strComplex = "A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z","1","2","3","4","5","6","7","8","9","0","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z”,"!","_" 
+    $strNumbers = "2","3","4","5","6","7","8","9","0"
+     
+    #Check to see if password contains at least 1 digit
+    $bolHasNumber = $false
+    $pass = $null
+     
+    #Sets which Character Array to use based on $Complex
+    if ($Complex){$strCharacters = $strComplex}else{$strCharacters = $strSimple}
+   
+    #Loop to actually generate the password
+    for ($i=0;$i -lt $PasswordLength; $i++){$c = Get-Random -InputObject $strCharacters
+     if ([char]::IsDigit($c)){$bolHasNumber = $true}$pass += $c}
+    
+    #Check to see if a Digit was seen, if not, fixit
+    if ($bolHasNumber)
+        {
+            return $pass
+        }
+        else
+        {
+            $pos = Get-Random -Maximum $PasswordLength
+            $n = Get-Random -InputObject $strNumbers
+            $pwArray = $pass.ToCharArray()
+            $pwArray[$pos] = $n
+            $pass = ""
+            foreach ($s in $pwArray)
+            {
+                $pass += $s
+            }
+        return $pass
+    }
+}
+Function Global:Update-VIALog
+{
+    Param(
+    [Parameter(
+        Mandatory=$true, 
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true,
+        Position=0
+    )]
+    [string]$Data,
 
+    [Parameter(
+        Mandatory=$false, 
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true,
+        Position=0
+    )]
+    [string]$Solution = $Solution,
+
+    [Parameter(
+        Mandatory=$false, 
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true,
+        Position=1
+    )]
+    [validateset('Information','Warning','Error')]
+    [string]$Class = "Information"
+
+    )
+    $LogString = "$Solution, $Data, $Class, $(Get-Date)"
+    $HostString = "$Solution, $Data, $(Get-Date)"
+    
+    Add-Content -Path $LogPath -Value $LogString
+    switch ($Class)
+    {
+        'Information'{
+            Write-Host $HostString -ForegroundColor Gray
+            }
+        'Warning'{
+            Write-Host $HostString -ForegroundColor Yellow
+            }
+        'Error'{
+            Write-Host $HostString -ForegroundColor Red
+            }
+        Default {}
+    }
+}
