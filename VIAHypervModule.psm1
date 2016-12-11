@@ -971,5 +971,17 @@ Function Get-VIAActiveDiffDisk
     }
     $ActiveDisks | Sort-Object | Select-Object -Unique
 }
+Function Wait-VIAVMRestart
+{
+    Param(
+    $VMname,
+    $Credentials
+    )
+    Restart-VIAVM -VMname $VMname
+    Wait-VIAVMIsRunning -VMname $VMname
+    Wait-VIAVMHaveICLoaded -VMname $VMname
+    Wait-VIAVMHaveIP -VMname $VMname
+    Wait-VIAVMHavePSDirect -VMname $VMname -Credentials $Credentials
+}
 
 
