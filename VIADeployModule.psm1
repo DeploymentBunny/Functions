@@ -85,7 +85,7 @@
         $DomainAdminDomain = "VIAMONSTRA",
 
         [parameter(mandatory=$false)]
-        $MachienObjectOU = "OU=Infrastructure Servers,OU=Servers,OU=Internal IT,OU=ViaMonstra,DC=corp,DC=ViaMonstra,DC=com",
+        $MachienObjectOU = "NA",
 
         [parameter(mandatory=$false)]
         $JoinWorkgroup = "WORKGROUP",
@@ -120,7 +120,10 @@
             Add-Content $unattendFile "                    <Password>$DomainAdminPassword</Password>"
             Add-Content $unattendFile '                </Credentials>'
             Add-Content $unattendFile "                <JoinDomain>$DNSDomain</JoinDomain>"
-            #Add-Content $unattendFile "                <MachineObjectOU>$MachienObjectOU</MachineObjectOU>"
+            If($MachienObjectOU -ne 'NA'){
+            Write-Host "OU is set to $MachienObjectOU"
+                Add-Content $unattendFile "                <MachineObjectOU>$MachienObjectOU</MachineObjectOU>"
+            }
             Add-Content $unattendFile '            </Identification>'
             Add-Content $unattendFile '        </component>'
         }
