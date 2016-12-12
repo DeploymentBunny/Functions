@@ -447,3 +447,8 @@ Function Clear-VIAVolume
     )
     Get-Volume -FileSystemLabel $VolumeLabel -ErrorAction SilentlyContinue| Get-Partition | Get-Disk | Clear-Disk -RemoveData -RemoveOEM -Confirm:$false
 }
+Function Start-VIASoundNotify{
+    $sound = new-Object System.Media.SoundPlayer;
+    $sound.SoundLocation="c:\WINDOWS\Media\notify.wav";
+    $sound.Play();
+}
