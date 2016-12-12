@@ -438,4 +438,12 @@ Function Suspend-VIAScript($Message = "Press any key to continue . . . ")
  
     Write-Host
 }
+Function Clear-VIAVolume
+{
+    [cmdletbinding(SupportsShouldProcess=$True)]
 
+    Param(
+        $VolumeLabel
+    )
+    Get-Volume -FileSystemLabel $VolumeLabel -ErrorAction SilentlyContinue| Get-Partition | Get-Disk | Clear-Disk -RemoveData -RemoveOEM -Confirm:$false
+}
