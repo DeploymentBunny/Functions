@@ -260,11 +260,11 @@ Function Wait-VIAVMExists
 
     do
     {
-        Write-Host "Waiting for $VMname to exist"
+        Write-Verbose "Waiting for $VMname to exist"
         Start-Sleep -Seconds 1
     }
     until ((Test-VMExists -VMname $VMname) -eq $true)
-    Write-Host "$VMname exists"
+    Write-Verbose "$VMname exists"
 }
 Function Wait-VIAVMIsRunning
 {
@@ -288,11 +288,11 @@ Function Wait-VIAVMIsRunning
 
     do
     {
-        Write-Host "Waiting for $VMname is Running"
+        Write-Verbose "Waiting for $VMname is Running"
         Start-Sleep -Seconds 3
     }
     while ((Test-VIAVMIsRunning -VMname $VMname) -eq $false)
-    Write-Host "$VMname is running"
+    Write-Verbose "$VMname is running"
 }
 Function Wait-VIAVMHaveICLoaded
 {
@@ -316,11 +316,11 @@ Function Wait-VIAVMHaveICLoaded
 
     do
     {
-        Write-Host "Waiting for $VMname to load IC's"
+        Write-Verbose "Waiting for $VMname to load IC's"
         Start-Sleep -Seconds 3
     }
     while ((Test-VIAVMHaveICLoaded -VMname $VMname) -eq $false)
-    Write-Host "$VMname has IC's loaded"
+    Write-Verbose "$VMname has IC's loaded"
 }
 Function Wait-VIAVMHaveIP
 {
@@ -344,11 +344,11 @@ Function Wait-VIAVMHaveIP
 
     do
     {
-        Write-Host "Waiting for $VMname to get some kind of IP"
+        Write-Verbose "Waiting for $VMname to get some kind of IP"
         Start-Sleep -Seconds 1
     }
     while ((Test-VIAVMIsRunning -VMname $VMname) -eq $false)
-    Write-Host "$VMname has an IP"
+    Write-Verbose "$VMname has an IP"
 }
 Function Wait-VIAVMHavePSDirect
 {
@@ -373,11 +373,11 @@ Function Wait-VIAVMHavePSDirect
 
     do
     {
-        Write-Host "Waiting for $VMname to give me PowerShell Direct access"
+        Write-Verbose "Waiting for $VMname to give me PowerShell Direct access"
         Start-Sleep -Seconds 1
     }
     while ((Test-VIAVMIsRunning -VMname $VMname) -eq $false)
-    Write-Host "$VMname has PowerShell Direct open"
+    Write-Verbose "$VMname has PowerShell Direct open"
 }
 Function Wait-VIAVMDeployment
 {
@@ -401,11 +401,11 @@ Function Wait-VIAVMDeployment
 
     do
     {
-        Write-Host "Waiting for $VMname to write ""Done"" in the KVP registry"
+        Write-Verbose "Waiting for $VMname to write ""Done"" in the KVP registry"
         Start-Sleep -Seconds 5
     }
     while ((Test-VIAVMDeployment -VMname $VMname) -eq $false)
-    Write-Host "$VMname has written done in the KVP Registry"
+    Write-Verbose "$VMname has written done in the KVP Registry"
 }
 Function Wait-VIAVMTaskSequenceDeployment
 {
@@ -429,11 +429,11 @@ Function Wait-VIAVMTaskSequenceDeployment
 
     do
     {
-        Write-Host "Waiting for $VMname to finish TaskSequence in the KVP registry"
+        Write-Verbose "Waiting for $VMname to finish TaskSequence in the KVP registry"
         Start-Sleep -Seconds 5
     }
     while ((Test-VIAVMTaskSequenceDeployment -VMname $VMname) -eq $false)
-    Write-Host "$VMname has written done in the KVP Registry"
+    Write-Verbose "$VMname has written done in the KVP Registry"
 }
 Function Mount-VIAVHDInFolder
 {
@@ -973,6 +973,20 @@ Function Get-VIAActiveDiffDisk
 }
 Function Wait-VIAVMRestart
 {
+    <#
+    .Synopsis
+        Script used to Deploy and Configure Fabric
+    .DESCRIPTION
+        Created: 2016-11-07
+        Version: 1.0
+        Author : Mikael Nystrom
+        Twitter: @mikael_nystrom
+        Blog   : http://deploymentbunny.com
+        Disclaimer: This script is provided "AS IS" with no warranties.
+    .EXAMPLE
+        Wait-VIAVMRestart -VMName FAADDS01 -Credentials $Credentials
+    #>    
+    [CmdletBinding(SupportsShouldProcess=$true)]
     Param(
     $VMname,
     $Credentials
@@ -983,5 +997,38 @@ Function Wait-VIAVMRestart
     Wait-VIAVMHaveIP -VMname $VMname
     Wait-VIAVMHavePSDirect -VMname $VMname -Credentials $Credentials
 }
+Function Wait-VIAVMADDSReady
+{
+    <#
+    .Synopsis
+        Script used to Deploy and Configure Fabric
+    .DESCRIPTION
+        Created: 2016-12-14
+        Version: 1.0
+        Author : Mikael Nystrom
+        Twitter: @mikael_nystrom
+        Blog   : http://deploymentbunny.com
+        Disclaimer: This script is provided "AS IS" with no warranties.
+    .EXAMPLE
+        Wait-VIAVMADDSReady -VMName FAADDS01 -Credentials $Credentials
+    #>    
 
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param(
+    $VMname,
+    $Credentials
+    )
 
+    #Check that ADDS is up and running
+    do{
+    $result = Invoke-Command -VMName $VMname -ScriptBlock {
+            Param(
+            $VMname
+            )
+            Test-Path -Path \\$VMname\NETLOGON
+        } -Credential $Credentials -ArgumentList $VMname
+        Write-Verbose "Waiting for Domain Controller to be operational..."
+        Start-Sleep -Seconds 30
+    }until($result -eq $true)
+    Write-Verbose "Waiting for Domain Controller is now operational..."
+}

@@ -121,7 +121,7 @@
             Add-Content $unattendFile '                </Credentials>'
             Add-Content $unattendFile "                <JoinDomain>$DNSDomain</JoinDomain>"
             If($MachienObjectOU -ne 'NA'){
-            Write-Host "OU is set to $MachienObjectOU"
+            Write-Verbose "OU is set to $MachienObjectOU"
                 Add-Content $unattendFile "                <MachineObjectOU>$MachienObjectOU</MachineObjectOU>"
             }
             Add-Content $unattendFile '            </Identification>'

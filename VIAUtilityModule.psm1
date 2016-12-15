@@ -59,12 +59,17 @@ Function Convert-Subnet
 
     #>
 
+    [CmdletBinding(SupportsShouldProcess=$true)]
 
-    param( 
-
-        [Parameter(ParameterSetName="SubnetMask",Mandatory=$True)][string]$SubnetMask, 
-        [Parameter(ParameterSetName="PrefixLength",Mandatory=$True)][int]$PrefixLength)
-
+    Param( 
+        [Parameter(ParameterSetName="SubnetMask",Mandatory=$True)]
+        [string]
+        $SubnetMask, 
+        
+        [Parameter(ParameterSetName="PrefixLength",Mandatory=$True)]
+        [int]
+        $PrefixLength
+    )
 
     ####################################
     #User provided a prefix
@@ -73,7 +78,7 @@ Function Convert-Subnet
         $PrefixLengthReturn = $PrefixLength
         if ($PrefixLength -gt 32) 
         { 
-            write-host "Invalid input, prefix length must be less than 32"
+            Write-Warning "Invalid input, prefix length must be less than 32"
             exit(1)
         }
                
@@ -127,7 +132,7 @@ Function Convert-Subnet
 
         if ($IsValidInput -eq $False)
         {
-            Write-Host "Invalid Input. Please enter a properly formatted subnet mask."
+            Write-Warning "Invalid Input. Please enter a properly formatted subnet mask."
             Exit(1)
         }
 
@@ -190,7 +195,7 @@ Function Convert-Subnet
                 {
                     if($Mark -eq $True)
                     {
-                        Write-Host "Invalid Input. Please enter a properly formatted subnet mask."
+                        Write-Warning "Invalid Input. Please enter a properly formatted subnet mask."
                         Exit(1)
                     }    
                 }
@@ -209,6 +214,7 @@ Function Convert-Subnet
 }
 Function Compress-VIADeDupDrive
 {
+    [CmdletBinding(SupportsShouldProcess=$true)]
     Param(
         $DriveLetter
     )
@@ -221,7 +227,7 @@ Function Compress-VIADeDupDrive
 }
 Function Enable-VIACredSSP
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,Position=0)]
@@ -235,6 +241,9 @@ Function Enable-VIACredSSP
 }
 Function Get-VIAOSVersion
 {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param(
+    )
     $OS = Get-WmiObject -Class Win32_OperatingSystem
     $OSversion = [System.Environment]::OSVersion.Version
     $OSversionComplete = "$($version.major).$($version.Minor).$($version.build)"
@@ -266,8 +275,10 @@ Function Get-VIAOSVersion
 }
 Function Install-VIASNMP
 {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+
     Param(
-        $ComputerName
+            $ComputerName
     )
     Foreach($Item in $ComputerName){
         Invoke-Command -ComputerName $Item -ScriptBlock {
@@ -277,6 +288,8 @@ Function Install-VIASNMP
 }
 Function Install-VIADCB
 {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+
     Param(
         $ComputerName
     )
@@ -288,6 +301,8 @@ Function Install-VIADCB
 }
 Function Restart-VIAComputer
 {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+
     Param(
         $ComputerName
     )
@@ -297,6 +312,8 @@ Function Restart-VIAComputer
 }
 Function Show-VIAText
 {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+
     Param(
         $Text,
         $Color
@@ -306,6 +323,8 @@ Function Show-VIAText
 }
 Function New-VIARandomPassword
 {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+
     Param(
         [int]$PasswordLength,
         [boolean]$Complex
@@ -346,8 +365,10 @@ Function New-VIARandomPassword
         return $pass
     }
 }
-Function Global:Update-VIALog
+Function Update-VIALog
 {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+
     Param(
     [Parameter(
         Mandatory=$true, 
@@ -393,8 +414,14 @@ Function Global:Update-VIALog
         Default {}
     }
 }
-Function Suspend-VIAScript($Message = "Press any key to continue . . . ")
+Function Suspend-VIAScript
 {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+
+    Param(
+        $Message = "Press any key to continue . . . "
+    )
+
     If ($psISE) {
         # The "ReadKey" functionality is not supported in Windows PowerShell ISE.
         $Shell = New-Object -ComObject "WScript.Shell"
@@ -448,6 +475,12 @@ Function Clear-VIAVolume
     Get-Volume -FileSystemLabel $VolumeLabel -ErrorAction SilentlyContinue| Get-Partition | Get-Disk | Clear-Disk -RemoveData -RemoveOEM -Confirm:$false
 }
 Function Start-VIASoundNotify{
+
+    [cmdletbinding(SupportsShouldProcess=$True)]
+
+    Param(
+    )
+
     $sound = new-Object System.Media.SoundPlayer;
     $sound.SoundLocation="c:\WINDOWS\Media\notify.wav";
     $sound.Play();
