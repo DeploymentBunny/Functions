@@ -261,7 +261,7 @@ Function Wait-VIAVMExists
     do
     {
         Write-Verbose "Waiting for $VMname to exist"
-        Start-Sleep -Seconds 1
+        Start-Sleep -Seconds 2
     }
     until ((Test-VMExists -VMname $VMname) -eq $true)
     Write-Verbose "$VMname exists"
@@ -289,7 +289,7 @@ Function Wait-VIAVMIsRunning
     do
     {
         Write-Verbose "Waiting for $VMname is Running"
-        Start-Sleep -Seconds 3
+        Start-Sleep -Seconds 2
     }
     while ((Test-VIAVMIsRunning -VMname $VMname) -eq $false)
     Write-Verbose "$VMname is running"
@@ -317,7 +317,7 @@ Function Wait-VIAVMHaveICLoaded
     do
     {
         Write-Verbose "Waiting for $VMname to load IC's"
-        Start-Sleep -Seconds 3
+        Start-Sleep -Seconds 5
     }
     while ((Test-VIAVMHaveICLoaded -VMname $VMname) -eq $false)
     Write-Verbose "$VMname has IC's loaded"
@@ -345,7 +345,7 @@ Function Wait-VIAVMHaveIP
     do
     {
         Write-Verbose "Waiting for $VMname to get some kind of IP"
-        Start-Sleep -Seconds 1
+        Start-Sleep -Seconds 5
     }
     while ((Test-VIAVMIsRunning -VMname $VMname) -eq $false)
     Write-Verbose "$VMname has an IP"
@@ -374,7 +374,7 @@ Function Wait-VIAVMHavePSDirect
     do
     {
         Write-Verbose "Waiting for $VMname to give me PowerShell Direct access"
-        Start-Sleep -Seconds 1
+        Start-Sleep -Seconds 5
     }
     while ((Test-VIAVMIsRunning -VMname $VMname) -eq $false)
     Write-Verbose "$VMname has PowerShell Direct open"
@@ -997,6 +997,32 @@ Function Wait-VIAVMRestart
     Wait-VIAVMHaveIP -VMname $VMname
     Wait-VIAVMHavePSDirect -VMname $VMname -Credentials $Credentials
 }
+Function Wait-VIAVMStart
+{
+    <#
+    .Synopsis
+        Script used to Deploy and Configure Fabric
+    .DESCRIPTION
+        Created: 2016-11-07
+        Version: 1.0
+        Author : Mikael Nystrom
+        Twitter: @mikael_nystrom
+        Blog   : http://deploymentbunny.com
+        Disclaimer: This script is provided "AS IS" with no warranties.
+    .EXAMPLE
+        Wait-VIAVMStart -VMName FAADDS01 -Credentials $Credentials
+    #>    
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param(
+    $VMname,
+    $Credentials
+    )
+    Start-VM -VMname $VMname
+    Wait-VIAVMIsRunning -VMname $VMname
+    Wait-VIAVMHaveICLoaded -VMname $VMname
+    Wait-VIAVMHaveIP -VMname $VMname
+    Wait-VIAVMHavePSDirect -VMname $VMname -Credentials $Credentials
+}
 Function Wait-VIAVMADDSReady
 {
     <#
@@ -1031,4 +1057,27 @@ Function Wait-VIAVMADDSReady
         Start-Sleep -Seconds 30
     }until($result -eq $true)
     Write-Verbose "Waiting for Domain Controller is now operational..."
+}
+Function Enable-VIAVMDeviceNaming
+{
+    <#
+    .Synopsis
+        Script used to Deploy and Configure Fabric
+    .DESCRIPTION
+        Created: 2016-12-14
+        Version: 1.0
+        Author : Mikael Nystrom
+        Twitter: @mikael_nystrom
+        Blog   : http://deploymentbunny.com
+        Disclaimer: This script is provided "AS IS" with no warranties.
+    .EXAMPLE
+        Wait-VIAVMADDSReady -VMName FAADDS01 -Credentials $Credentials
+    #>    
+
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param(
+        $VMName
+    )
+
+    Get-VMNetworkAdapter -VMName $VMName | Set-VMNetworkAdapter -DeviceNaming On
 }

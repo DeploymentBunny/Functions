@@ -221,4 +221,16 @@ Function Convert-VIASubnet
     Add-Member -InputObject $Return -Name SubnetMask -Value  $SubnetMaskReturn -Type NoteProperty
     $Return
 }
+function Rename-VIANetAdapterUsingDeviceNaming
+{
+    [cmdletbinding(SupportsShouldProcess=$True)]
+    Param(
+        $VMDeviceName
+    )
+    Get-NetAdapter | Disable-NetAdapter -Confirm:$false
+    Get-NetAdapter | Enable-NetAdapter -Confirm:$false
+    $NIC = (Get-NetAdapterAdvancedProperty -Name * | Where-Object -FilterScript {$_.DisplayValue -eq $VMDeviceName}).Name
+    Rename-NetAdapter -Name $NIC -NewName $VMDeviceName
+}
+
 

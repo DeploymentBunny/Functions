@@ -573,8 +573,10 @@ Function Get-VIAXMLFabricServerDataDisk
     foreach($Item in $Items){
         $Data = [ordered]@{
             Name = $item.Name;
+            DiskNumber = $item.DiskNumber;
             DiskSize = $item.DiskSize;
             FileSystem = $item.FileSystem;
+            PartitionType = $item.PartitionType;
             ParentID = $ParentItem.Id;
             ParentName = $ParentItem.Name;
             Active = $item.Active;
