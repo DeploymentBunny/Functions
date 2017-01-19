@@ -175,7 +175,7 @@ Function Test-VIAVMHavePSDirect
     #Check if VM exists
     if((Test-VIAVMExists -VMname $VMName) -eq $false){Write-Warning "Could find $VMName";break}   
 
-    if((Invoke-Command -VMName $VMName -Credential $Credentials {"Test"}) -ne "Test"){
+    if((Invoke-Command -VMName $VMName -Credential $Credentials -ErrorAction SilentlyContinue {"Test"}) -ne "Test"){
         Return $false
     }
     Else {
@@ -376,7 +376,7 @@ Function Wait-VIAVMHavePSDirect
         Write-Verbose "Waiting for $VMname to give me PowerShell Direct access"
         Start-Sleep -Seconds 5
     }
-    while ((Test-VIAVMIsRunning -VMname $VMname) -eq $false)
+    while ((Test-VIAVMHavePSDirect -VMname $VMname -Credentials $Credentials) -eq $false)
     Write-Verbose "$VMname has PowerShell Direct open"
 }
 Function Wait-VIAVMDeployment
@@ -684,6 +684,7 @@ Function New-VIAVM
     $VM = New-VM -Name $VMName -MemoryStartupBytes $VMMem -Path $VMLocation -NoVHD -Generation $VMGeneration
     Remove-VMNetworkAdapter -VM $VM
 
+
     #Add Networkadapter
     if($VMNetWorkType -eq "Legacy" -and $VMGeneration -eq "1")
     {
@@ -693,6 +694,8 @@ Function New-VIAVM
     {
         Add-VMNetworkAdapter -VM $VM -SwitchName $VMSwitchName
     }
+
+
 
     #Set vCPU
     if($VMvCPU -ne "1")

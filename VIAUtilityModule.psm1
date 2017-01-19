@@ -474,7 +474,8 @@ Function Clear-VIAVolume
     )
     Get-Volume -FileSystemLabel $VolumeLabel -ErrorAction SilentlyContinue| Get-Partition | Get-Disk | Clear-Disk -RemoveData -RemoveOEM -Confirm:$false
 }
-Function Start-VIASoundNotify{
+Function Start-VIASoundNotify
+{
 
     [cmdletbinding(SupportsShouldProcess=$True)]
 
@@ -485,3 +486,21 @@ Function Start-VIASoundNotify{
     $sound.SoundLocation="c:\WINDOWS\Media\notify.wav";
     $sound.Play();
 }
+Function Wait-VIAServiceToRun
+{
+    [cmdletbinding(SupportsShouldProcess=$True)]
+    Param(
+        $ServiceName = 'LanmanWorkstation',
+        $VMname,
+        $Credentials
+    )
+    Write-Verbose "Waiting for $ServiceName to start on $VMname"
+    Invoke-Command -VMName $VMname -ScriptBlock {
+        Param($ServiceName)
+        do{
+            Write-Verbose "Waiting for $ServiceName to start"
+            Get-Service -Name $ServiceName
+        }until((Get-Service -Name $ServiceName).Status -eq 'Running' )
+    } -Credential $Credentials -ArgumentList $ServiceName
+}
+
