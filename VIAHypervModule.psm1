@@ -674,7 +674,12 @@ Function New-VIAVM
 
         [parameter(mandatory=$false)]
         [ValidateNotNullOrEmpty()]
-        $EmptyDiskSize
+        $EmptyDiskSize,
+
+        [parameter(mandatory=$false)]
+        [ValidateNotNullOrEmpty()]
+        [switch]
+        $DynaMem
     )
 
     #Check if VM exists
@@ -683,6 +688,16 @@ Function New-VIAVM
     #Create VM 
     $VM = New-VM -Name $VMName -MemoryStartupBytes $VMMem -Path $VMLocation -NoVHD -Generation $VMGeneration
     Remove-VMNetworkAdapter -VM $VM
+
+    if($DynaMem -eq $True){
+        Write-Verbose "Configure dynamic memory"
+        Set-VMMemory -VM $VM -DynamicMemoryEnabled $True -MaximumBytes $VMMem -MinimumBytes $VMMem -StartupBytes $VMMem
+    }else{
+        Write-Verbose "Disable dynamic memory"
+        Set-VMMemory -VM $VM -DynamicMemoryEnabled $false
+    }
+
+
 
 
     #Add Networkadapter
@@ -1051,11 +1066,8 @@ Function Wait-VIAVMADDSReady
     #Check that ADDS is up and running
     do{
     $result = Invoke-Command -VMName $VMname -ScriptBlock {
-            Param(
-            $VMname
-            )
-            Test-Path -Path \\$VMname\NETLOGON
-        } -Credential $Credentials -ArgumentList $VMname
+            Test-Path -Path \\$env:computername\NETLOGON
+        } -Credential $Credentials
         Write-Verbose "Waiting for Domain Controller to be operational..."
         Start-Sleep -Seconds 30
     }until($result -eq $true)
