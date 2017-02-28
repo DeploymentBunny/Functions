@@ -85,7 +85,7 @@
         $DomainAdminDomain = "VIAMONSTRA",
 
         [parameter(mandatory=$false)]
-        $MachienObjectOU = "NA",
+        $MachineObjectOU = "NA",
 
         [parameter(mandatory=$false)]
         $JoinWorkgroup = "WORKGROUP",
@@ -119,8 +119,8 @@
             Add-Content $unattendFile '                </Credentials>'
             Add-Content $unattendFile "                <JoinDomain>$DNSDomain</JoinDomain>"
             If($MachienObjectOU -ne 'NA'){
-            Write-Verbose "OU is set to $MachienObjectOU"
-                Add-Content $unattendFile "                <MachineObjectOU>$MachienObjectOU</MachineObjectOU>"
+            Write-Verbose "OU is set to $MachineObjectOU"
+                Add-Content $unattendFile "                <MachineObjectOU>$MachineObjectOU</MachineObjectOU>"
             }
             Add-Content $unattendFile '            </Identification>'
             Add-Content $unattendFile '        </component>'
@@ -351,8 +351,8 @@ Function New-VIAUnattendXMLClient
             Add-Content $unattendFile '                </Credentials>'
             Add-Content $unattendFile "                <JoinDomain>$DNSDomain</JoinDomain>"
             If($MachienObjectOU -ne 'NA'){
-            Write-Verbose "OU is set to $MachienObjectOU"
-                Add-Content $unattendFile "                <MachineObjectOU>$MachienObjectOU</MachineObjectOU>"
+            Write-Verbose "OU is set to $MachineObjectOU"
+                Add-Content $unattendFile "                <MachineObjectOU>$MachineObjectOU</MachineObjectOU>"
             }
             Add-Content $unattendFile '            </Identification>'
             Add-Content $unattendFile '        </component>'
