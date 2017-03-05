@@ -28,3 +28,39 @@ Function Initialize-VIADataDisk
         $Drive = Get-Partition -DiskNumber $DiskNumber -PartitionNumber $Drive.PartitionNumber
     }
 }
+Function New-VIAVHD
+{
+    [CmdletBinding(SupportsShouldProcess=$true)]
+
+    Param(
+    [Parameter(Position=0)]
+    [ValidateNotNullOrEmpty()]
+    [string]
+    $VHDFile,
+
+    [Parameter(Position=1)]
+    [ValidateNotNullOrEmpty()]
+    [string]
+    $VHDSizeinMB,
+
+    [Parameter(Position=2)]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('EXPANDABLE','FIXED')]
+    [string]
+    $VHDType
+    )
+
+    if(!(Test-Path -Path ($VHDFile | Split-Path -Parent))){
+        throw "Folder does not exists..."}
+    
+    #Check if file exists
+    if(Test-Path -Path $VHDFile){
+        throw "File exists..."}
+
+    $diskpartcmd = New-Item -Path $env:TEMP\diskpartcmd.txt -ItemType File -Force
+    Set-Content -Path $diskpartcmd -Value "CREATE VDISK FILE=""$VHDFile"" MAXIMUM=$VHDSizeinMB TYPE=$VHDType"
+    $Exe = "DiskPart.exe"
+    $Args = "-s $($diskpartcmd.FullName)"
+    Invoke-Exe -Executable $Exe -Arguments $Args -SuccessfulReturnCode 0
+    Remove-Item $diskpartcmd -Force -ErrorAction SilentlyContinue
+}
