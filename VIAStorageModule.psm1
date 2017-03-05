@@ -61,6 +61,6 @@ Function New-VIAVHD
     Set-Content -Path $diskpartcmd -Value "CREATE VDISK FILE=""$VHDFile"" MAXIMUM=$VHDSizeinMB TYPE=$VHDType"
     $Exe = "DiskPart.exe"
     $Args = "-s $($diskpartcmd.FullName)"
-    Invoke-Exe -Executable $Exe -Arguments $Args -SuccessfulReturnCode 0
+    Invoke-VIAExe -Executable $Exe -Arguments $Args -SuccessfulReturnCode 0
     Remove-Item $diskpartcmd -Force -ErrorAction SilentlyContinue
 }
