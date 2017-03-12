@@ -118,7 +118,7 @@
             Add-Content $unattendFile "                    <Password>$DomainAdminPassword</Password>"
             Add-Content $unattendFile '                </Credentials>'
             Add-Content $unattendFile "                <JoinDomain>$DNSDomain</JoinDomain>"
-            If($MachienObjectOU -ne 'NA'){
+            If(!($MachineObjectOU -eq 'NA')){
             Write-Verbose "OU is set to $MachineObjectOU"
                 Add-Content $unattendFile "                <MachineObjectOU>$MachineObjectOU</MachineObjectOU>"
             }
@@ -317,7 +317,7 @@ Function New-VIAUnattendXMLClient
         $DomainAdminDomain = "VIAMONSTRA",
 
         [parameter(mandatory=$false)]
-        $MachienObjectOU = "NA",
+        $MachineObjectOU = "NA",
 
         [parameter(mandatory=$false)]
         $JoinWorkgroup = "WORKGROUP",
@@ -350,7 +350,7 @@ Function New-VIAUnattendXMLClient
             Add-Content $unattendFile "                    <Password>$DomainAdminPassword</Password>"
             Add-Content $unattendFile '                </Credentials>'
             Add-Content $unattendFile "                <JoinDomain>$DNSDomain</JoinDomain>"
-            If($MachienObjectOU -ne 'NA'){
+            If(!($MachineObjectOU -eq 'NA')){
             Write-Verbose "OU is set to $MachineObjectOU"
                 Add-Content $unattendFile "                <MachineObjectOU>$MachineObjectOU</MachineObjectOU>"
             }
