@@ -1,11 +1,11 @@
 ﻿Function Add-VIARacAdmUser {
     Param (
-        $RACRootUser = "root",
-        $RACRootUserPass = "calvin",
-        $IPAddress = '172.16.3.201',
+        $RACRootUser,
+        $RACRootUserPass,
+        $IPAddress,
         $Index = "3",
-        $UserToAdd = "OOBUser",
-        $PasswordToAdd = "N0hack3rz!"
+        $UserToAdd,
+        $PasswordToAdd
     )
 
     $RACADMExe = "C:\Program Files\Dell\SysMgt\rac5\racadm.exe"
@@ -19,9 +19,9 @@
 }
 Function Remove-VIARacAdmUser {
     Param (
-        $RACRootUser = "root",
-        $RACRootUserPass = "calvin",
-        $IPAddress = '172.16.3.201',
+        $RACRootUser,
+        $RACRootUserPass,
+        $IPAddress,
         $Index = "3"
     )
 
@@ -30,18 +30,18 @@ Function Remove-VIARacAdmUser {
 }
 Function Enable-VIARacAdmIPMI {
     Param (
-        $IPAddress = '172.16.3.201',
-        $RACRootUser = "root",
-        $RACRootUserPass = "calvin"
+        $IPAddress,
+        $RACRootUser,
+        $RACRootUserPass
     )
     $RACADMExe = "C:\Program Files\Dell\SysMgt\rac5\racadm.exe"
     & $RACADMExe -r $IPAddress -u $RACRootUser -p $RACRootUserPass config -g cfgIpmiLan -o cfgIpmiLanEnable 1
 }
 Function Set-VIARacAdmPower {
     Param (
-        $IPAddress = '172.16.3.201',
-        $RACRootUser = "root",
-        $RACRootUserPass = "calvin",
+        $IPAddress,
+        $RACRootUser,
+        $RACRootUserPass,
         $Mode
     )
     $RACADMExe = "C:\Program Files\Dell\SysMgt\rac5\racadm.exe"
@@ -58,9 +58,9 @@ Function Set-VIARacAdmPower {
 }
 Function Set-VIARacAdmNextBoot {
     Param (
-        $IPAddress = '172.16.3.201',
-        $RACRootUser = "root",
-        $RACRootUserPass = "calvin",
+        $IPAddress,
+        $RACRootUser,
+        $RACRootUserPass,
         $Mode
     )
     $RACADMExe = "C:\Program Files\Dell\SysMgt\rac5\racadm.exe"
