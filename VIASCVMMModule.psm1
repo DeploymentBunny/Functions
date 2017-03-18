@@ -221,3 +221,21 @@ Function Install-VIASCVMMHostApplication
     do {}
     While($scriptjob.status -eq 'Running')
 }
+Function Remove-VIASCVMMHost {
+    Param(
+        $VMHostName,
+        $SCVMMAdminAccountName, 
+        $DNSServerName, 
+        $DNSZoneName
+     )
+
+    Import-Module -Name virtualmachinemanager -ErrorAction Stop
+    Import-Module -Name virtualmachinemanagercore -ErrorAction Stop
+    Import-Module -Name ActiveDirectory -ErrorAction Stop
+    Import-Module -Name DNSserver -ErrorAction Stop
+
+    $SCRunAsAccount = Get-SCRunAsAccount -VMMServer FASCVM01 -Name $SCVMMAdminAccountName
+    Get-SCVMHost | where ComputerName -EQ $VMHostName | Remove-SCVMHost -Credential $SCRunAsAccount -ErrorAction Continue
+    Remove-ADobject (Get-ADComputer $VMHostName).distinguishedname -Recursive -Confirm:$false -ErrorAction Continue
+    Get-DnsServerResourceRecord -Name $VMHostName -ComputerName $DNSServerName -ZoneName $DNSZoneName | Remove-DnsServerResourceRecord -ZoneName $DNSZoneName -ComputerName $DNSServerName -Confirm:$false -Force -ErrorAction Continue
+}
