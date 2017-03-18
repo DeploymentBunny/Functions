@@ -1,4 +1,24 @@
-﻿Function Get-VIAXMLFabricData
+﻿Function Get-VIAXMLData
+{
+    [cmdletbinding(SupportsShouldProcess=$True)]
+    
+    Param(
+        $RootFolder = $RootFolder
+    )
+
+    $Classes = 'Customers','CommonSettings','ProductKeys','Networks','Domains','Servers','Roles','Services'
+
+    $XMLData = @()
+    $XMLData += foreach($Item in $Classes){
+ 
+        #Read data from XML
+        $SettingsFile = $RootFolder + "\" + $Item + ".xml" 
+        [xml]$Settings = Get-Content $SettingsFile -ErrorAction Stop
+        }
+
+    $Return = $XMLData
+}
+Function Get-VIAXMLFabricData
 {
     [cmdletbinding(SupportsShouldProcess=$True)]
     
@@ -9,7 +29,6 @@
         [switch]$Active,
 
         $SettingsFile = $SettingsFile
-
     )
 
     #Read data from XML
