@@ -245,7 +245,7 @@ Function Get-VIAOSVersion
     Param(
     )
     $OS = Get-WmiObject -Class Win32_OperatingSystem
-    $OSversion = [System.Environment]::OSVersion.Version
+    $version = [System.Environment]::OSVersion.Version
     $OSversionComplete = "$($version.major).$($version.Minor).$($version.build)"
     $OSversionMajorMinor = "$($version.major).$($version.Minor)"
     $OSversionMajor = "$($version.major).$($version.Minor)"
